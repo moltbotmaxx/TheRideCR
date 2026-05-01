@@ -382,7 +382,7 @@ export default function Booking() {
                   <datalist id="bk-location-options">
                     {locationOptions.map((item) => <option key={item} value={item} />)}
                   </datalist>
-                  <div className="ticket-row">
+                  <div className="ticket-row ticket-row-person">
                     <div className="field">
                       <label htmlFor="bk-name">{t.lName}</label>
                       <input
@@ -407,7 +407,7 @@ export default function Booking() {
                       />
                     </div>
                   </div>
-                  <div className="ticket-row">
+                  <div className="ticket-row ticket-row-route">
                     <div className="field">
                       <label htmlFor="bk-from">{t.lFrom}</label>
                       <input
@@ -437,7 +437,7 @@ export default function Booking() {
                       />
                     </div>
                   </div>
-                  <div className="ticket-row">
+                  <div className="ticket-row ticket-row-schedule">
                     <div className="field">
                       <label htmlFor="bk-date">{t.lDate}</label>
                       <input id="bk-date" type="date" value={date} min={new Date().toISOString().split('T')[0]} onChange={e => setDate(e.target.value)} />
@@ -447,7 +447,7 @@ export default function Booking() {
                       <input id="bk-time" type="time" value={time} onChange={e => setTime(e.target.value)} />
                     </div>
                   </div>
-                  <div className="ticket-row">
+                  <div className="ticket-row ticket-row-details">
                     <div className="field">
                       <label htmlFor="bk-pax">{t.lPax}</label>
                       <select id="bk-pax" value={pax} onChange={e => setPax(+e.target.value)}>

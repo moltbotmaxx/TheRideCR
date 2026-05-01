@@ -33,6 +33,9 @@ export default function BottomNav({ activeTab, setActiveTab }) {
             key={tab.id} 
             className={`nav-tab ${isActive ? 'active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
+            type="button"
+            aria-label={tab.label}
+            aria-current={isActive ? "page" : undefined}
             style={{ position: 'relative' }}
           >
             {isActive && (
@@ -50,7 +53,7 @@ export default function BottomNav({ activeTab, setActiveTab }) {
                 }}
               />
             )}
-            <IconComponent size={24} strokeWidth={2} />
+            <IconComponent size={22} strokeWidth={2.2} />
             <span>{tab.label}</span>
           </button>
         );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Nav from './components/Nav';
 import Hero from './components/Hero';
 import Marquee from './components/Marquee';
@@ -13,6 +13,7 @@ import Icon from './components/Icon';
 import BottomNav from './components/BottomNav';
 import DriverProfile from './components/DriverProfile';
 import MobileHeader from './components/MobileHeader';
+import MobileHome from './components/MobileHome';
 import ScrollVideoSection from './components/ScrollVideoSection';
 import AdminDashboard from './components/AdminDashboard';
 import Podcast from './components/Podcast';
@@ -84,6 +85,7 @@ function App() {
   const [showWA, setShowWA] = useState(true);
   const [activeTab, setActiveTab] = useState('home');
   const [isMobile, setIsMobile] = useState(false);
+  const mobileScreenRef = useRef(null);
   const { lang } = useLanguage();
   const isAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
   const [isAdminAuthed, setIsAdminAuthed] = useState(() => sessionStorage.getItem('trcr_admin_auth_v1') === 'true');
@@ -110,6 +112,16 @@ function App() {
     window.addEventListener('therideapp:navigate', handler);
     return () => window.removeEventListener('therideapp:navigate', handler);
   }, []);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    window.requestAnimationFrame(() => {
+      if (mobileScreenRef.current) {
+        mobileScreenRef.current.scrollTop = 0;
+        mobileScreenRef.current.scrollLeft = 0;
+      }
+    });
+  }, [activeTab, isMobile]);
 
   const pageVariants = {
     initial: { opacity: 0, y: 20 },
@@ -148,7 +160,7 @@ function App() {
 
       {/* MOBILE VIEW: Renders ONLY the active screen */}
       {isMobile && (
-        <div className="mobile-screen">
+        <div className="mobile-screen" ref={mobileScreenRef}>
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -159,7 +171,7 @@ function App() {
               transition={pageTransition}
               style={{ width: '100%', height: '100%' }}
             >
-              {activeTab === 'home' && <Hero />}
+              {activeTab === 'home' && <MobileHome />}
               {activeTab === 'book' && <Booking />}
               {activeTab === 'fleet' && (
                 <>
