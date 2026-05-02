@@ -367,10 +367,10 @@ export default function Booking() {
                 id="mobile-booking-form"
                 className="ticket"
                 onSubmit={handleSubmit}
-                initial={{ opacity: 0, y: 30 }}
+                initial={isMobile ? false : { opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                transition={isMobile ? { duration: 0.18, ease: "easeOut" } : { duration: 0.8, delay: 0.2, ease: "easeOut" }}
               >
                 <div className="ticket-cutout-l"></div>
                 <div className="ticket-cutout-r"></div>

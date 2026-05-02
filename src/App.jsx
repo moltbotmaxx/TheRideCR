@@ -123,6 +123,14 @@ function App() {
     });
   }, [activeTab, isMobile]);
 
+  const handleMobileTabChange = (tab) => {
+    if (tab === activeTab && mobileScreenRef.current) {
+      mobileScreenRef.current.scrollTo({ top: 0, left: 0 });
+      return;
+    }
+    setActiveTab(tab);
+  };
+
   const pageVariants = {
     initial: { opacity: 0, y: 20 },
     in: { opacity: 1, y: 0 },
@@ -192,7 +200,7 @@ function App() {
         </div>
       )}
 
-      {isMobile && <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />}
+      {isMobile && <BottomNav activeTab={activeTab} setActiveTab={handleMobileTabChange} />}
 
       {showWA && (
         <a 

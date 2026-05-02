@@ -17,6 +17,13 @@ function getRouteEmbedUrl(destination) {
 
 export default function RouteMap() {
   const { lang } = useLanguage();
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth <= 820);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 820);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   
   const content = {
     en: {
@@ -71,16 +78,44 @@ export default function RouteMap() {
   const [active, setActive] = React.useState(0);
   const act = pins[active];
   const routeUrl = getRouteEmbedUrl(act.query);
+  const headReveal = isMobile
+    ? { initial: false, animate: { opacity: 1, y: 0 }, transition: { duration: 0.18, ease: "easeOut" } }
+    : {
+        initial: { opacity: 0, y: 30 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-100px" },
+        transition: { duration: 0.8, ease: "easeOut" },
+      };
+  const pinListReveal = isMobile
+    ? { initial: false, animate: "visible" }
+    : { initial: "hidden", whileInView: "visible", viewport: { once: true, margin: "-50px" } };
+  const pinVariants = isMobile
+    ? undefined
+    : {
+        visible: { transition: { staggerChildren: 0.1 } },
+        hidden: {},
+      };
+  const pinItemVariants = isMobile
+    ? undefined
+    : {
+        hidden: { opacity: 0, x: -20 },
+        visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+      };
+  const mapReveal = isMobile
+    ? { initial: false, animate: { opacity: 1, scale: 1 }, transition: { duration: 0.18, ease: "easeOut" } }
+    : {
+        initial: { opacity: 0, scale: 0.95 },
+        whileInView: { opacity: 1, scale: 1 },
+        viewport: { once: true, margin: "-100px" },
+        transition: { duration: 0.8, delay: 0.2, ease: "easeOut" },
+      };
 
   return (
     <section id="map" className="routemap">
       <div className="wrap">
         <motion.div 
           className="routemap-head"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          {...headReveal}
         >
           <div>
             <span className="section-tag">{t.tag}</span>
@@ -92,13 +127,8 @@ export default function RouteMap() {
         <div className="routemap-grid">
           <motion.div 
             className="pin-list"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={{
-              visible: { transition: { staggerChildren: 0.1 } },
-              hidden: {}
-            }}
+            {...pinListReveal}
+            variants={pinVariants}
           >
             {pins.map((p, i) => (
               <motion.button
@@ -107,10 +137,7 @@ export default function RouteMap() {
                 className={`pin ${i===active?'active':''}`} 
                 onClick={() => setActive(i)}
                 aria-pressed={i === active}
-                variants={{
-                  hidden: { opacity: 0, x: -20 },
-                  visible: { opacity: 1, x: 0, transition: { duration: 0.5 } }
-                }}
+                variants={pinItemVariants}
               >
                 <span className="num">/{p.num}/</span>
                 <div>
@@ -124,10 +151,7 @@ export default function RouteMap() {
 
           <motion.div 
             className="map-canvas route-visual"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            {...mapReveal}
           >
             <span className="mapbadge">{t.mapBadge}</span>
             <AnimatePresence mode="wait">

@@ -8,6 +8,13 @@ import interiorImg from "../assets/interior.png";
 export default function Vehicle() {
   const { lang } = useLanguage();
   const [view, setView] = React.useState('ext'); // 'ext' or 'int'
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth <= 820);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 820);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const content = {
     en: {
@@ -42,16 +49,21 @@ export default function Vehicle() {
     }
   };
   const t = content[lang];
+  const textReveal = isMobile
+    ? { initial: false, animate: { opacity: 1, x: 0 }, transition: { duration: 0.18, ease: "easeOut" } }
+    : {
+        initial: { opacity: 0, x: -30 },
+        whileInView: { opacity: 1, x: 0 },
+        viewport: { once: true, margin: "-100px" },
+        transition: { duration: 0.8, ease: "easeOut" },
+      };
 
   return (
     <section id="vehicle" className="vehicle">
       <div className="wrap vehicle-grid">
         <motion.div 
           className="vehicle-text"
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          {...textReveal}
         >
           <span className="section-tag">{t.tag}</span>
           <h2 className="section-title">{t.title1} <em>{t.title2}</em></h2>
