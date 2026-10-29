@@ -87,6 +87,12 @@ function costaRicaDate() {
   }).format(new Date());
 }
 
+function readBookingRoute(value) {
+  if (typeof value?.from !== "string" || typeof value?.to !== "string") return null;
+  const from = value.from.trim(), to = value.to.trim();
+  return from && to && from.length <= 250 && to.length <= 250 ? { from, to } : null;
+}
+
 async function submissionKey(payload) {
   const encoded = new TextEncoder().encode(JSON.stringify(payload));
   const digest = await crypto.subtle.digest("SHA-256", encoded);
@@ -211,8 +217,9 @@ export default function Booking() {
     'La Fortuna / Arenal': { 'Monteverde': 130, 'Nicoya / Tamarindo': 270, 'Puerto Viejo': 370, 'SJO Airport': 200 },
     'Manuel Antonio / Quepos': { 'San José Hotels': 220, 'Uvita / Dominical': 80, 'SJO Airport': 250 },
   };
-  const [from, setFrom] = React.useState('SJO Airport');
-  const [to, setTo] = React.useState('San José Hotels');
+  const [initialRoute] = React.useState(() => readBookingRoute(window.history.state?.bookingRoute));
+  const [from, setFrom] = React.useState(initialRoute?.from || 'SJO Airport');
+  const [to, setTo] = React.useState(initialRoute?.to || 'San José Hotels');
   const [pax, setPax] = React.useState(2);
   const [customerName, setCustomerName] = React.useState("");
   const [customerContact, setCustomerContact] = React.useState("");
@@ -226,6 +233,26 @@ export default function Booking() {
   const [placesReady, setPlacesReady] = React.useState(false);
   const fromInputRef = React.useRef(null);
   const toInputRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const consumePendingRoute = () => {
+      if (!window.history.state?.bookingRoute) return;
+      const { bookingRoute, ...rest } = window.history.state;
+      window.history.replaceState(rest, "");
+    };
+    const selectRoute = (event) => {
+      const route = readBookingRoute(event.detail);
+      if (!route) return;
+      setFrom(route.from);
+      setTo(route.to);
+      setSuccess(null);
+      setSubmitError("");
+      consumePendingRoute();
+    };
+    consumePendingRoute();
+    window.addEventListener("therideapp:booking-route", selectRoute);
+    return () => window.removeEventListener("therideapp:booking-route", selectRoute);
+  }, []);
 
   const locationOptions = React.useMemo(() => {
     const values = new Set([

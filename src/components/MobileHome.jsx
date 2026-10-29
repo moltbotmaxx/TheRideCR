@@ -11,7 +11,12 @@ import {
 import { useLanguage } from "../LanguageContext";
 import heroBg from "../assets/hero_bg.jpeg";
 
-function goToTab(tab) {
+function goToTab(tab, route) {
+  if (route) {
+    // The booking screen mounts after navigation; retain its route until it can read it.
+    window.history.replaceState({ ...window.history.state, bookingRoute: route }, "");
+    window.dispatchEvent(new CustomEvent("therideapp:booking-route", { detail: route }));
+  }
   window.dispatchEvent(new CustomEvent("therideapp:navigate", { detail: { tab } }));
 }
 
@@ -34,9 +39,9 @@ export default function MobileHome() {
       routesSub: "Fast starting points",
       servicesTitle: "Trip essentials",
       routes: [
-        ["SJO", "San José Hotels", "$60", "25m"],
-        ["SJO", "La Fortuna", "$200", "3h 10m"],
-        ["SJO", "Manuel Antonio", "$250", "3h"],
+        ["SJO", "San José Hotels", "$60", "25m", "San José Hotels"],
+        ["SJO", "La Fortuna", "$200", "3h 10m", "La Fortuna / Arenal"],
+        ["SJO", "Manuel Antonio", "$250", "3h", "Manuel Antonio / Quepos"],
       ],
       services: [
         ["Fixed fare", "No surge pricing", ShieldCheck],
@@ -60,9 +65,9 @@ export default function MobileHome() {
       routesSub: "Puntos de salida rapidos",
       servicesTitle: "Esenciales del viaje",
       routes: [
-        ["SJO", "Hoteles San José", "$60", "25m"],
-        ["SJO", "La Fortuna", "$200", "3h 10m"],
-        ["SJO", "Manuel Antonio", "$250", "3h"],
+        ["SJO", "Hoteles San José", "$60", "25m", "San José Hotels"],
+        ["SJO", "La Fortuna", "$200", "3h 10m", "La Fortuna / Arenal"],
+        ["SJO", "Manuel Antonio", "$250", "3h", "Manuel Antonio / Quepos"],
       ],
       services: [
         ["Tarifa fija", "Sin precios dinamicos", ShieldCheck],
@@ -116,8 +121,8 @@ export default function MobileHome() {
       </div>
 
       <div className="mobile-route-scroller">
-        {t.routes.map(([from, to, fare, time]) => (
-          <button type="button" className="mobile-route-card" key={`${from}-${to}`} onClick={() => goToTab("book")}>
+        {t.routes.map(([from, to, fare, time, destination]) => (
+          <button type="button" className="mobile-route-card" key={`${from}-${to}`} onClick={() => goToTab("book", { from: "SJO Airport", to: destination })}>
             <span className="route-kicker">{from}</span>
             <strong>{to}</strong>
             <span className="route-meta"><MapPin size={13} />{time}</span>

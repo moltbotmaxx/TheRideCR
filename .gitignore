@@ -24,8 +24,8 @@ dist-ssr
 *.sw?
 
 # Static files that live in public/ only (never commit root copies)
-landing.mov
-og-image.png
+/landing.mov
+/og-image.png
 /assets/
 /favicon.svg
 /icon-*.png

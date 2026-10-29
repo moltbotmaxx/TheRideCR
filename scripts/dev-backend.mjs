@@ -11,7 +11,7 @@ for (const name of (await readdir('drizzle')).filter(n => n.endsWith('.sql')).so
   for (const statement of (await readFile('drizzle/' + name, 'utf8')).split('--> statement-breakpoint').map(s => s.trim()).filter(Boolean)) await DB.prepare(statement).run();
   await DB.prepare('INSERT INTO local_migrations (name) VALUES (?)').bind(name).run();
 }
-const env = { DB, ADMIN_EMAIL: 'tbnalfaro@gmail.com', PUBLIC_ORIGINS: 'http://127.0.0.1:4173,http://localhost:4173,http://localhost:5173' };
+const env = { DB, ADMIN_EMAIL: 'tbnalfaro@gmail.com', PUBLIC_ORIGINS: 'http://127.0.0.1:51029,http://127.0.0.1:4173,http://localhost:4173,http://localhost:5173' };
 const server = createServer(async (req, res) => {
   try {
     const headers = new Headers(req.headers);
