@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /*?admin=1
+Disallow: /*&admin=1
+
+Sitemap: https://theridecr.net/sitemap.xml
