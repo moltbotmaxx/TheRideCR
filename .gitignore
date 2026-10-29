@@ -35,3 +35,14 @@ og-image.png
 /manifest.webmanifest
 /manuel_antonio_cover.png
 /podcast_cover*.png
+
+# Runtime state, generated bundles and secrets
+build/
+.openai/*.tar.gz
+.openai/*credential*
+.dev.vars
+.env
+.env.*
+!.env.example
+.wrangler/
+.data/

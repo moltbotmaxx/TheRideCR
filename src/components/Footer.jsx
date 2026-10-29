@@ -1,3 +1,4 @@
+import { ADMIN_URL } from '../config';
 import { useLanguage } from "../LanguageContext";
 import { WA_NUMBER } from "../config";
 
@@ -74,7 +75,7 @@ export default function Footer() {
               <li><a href="#vehicle">{t.c2}</a></li>
               <li><span>{t.c3}</span></li>
               <li><a href="https://instagram.com/theridecr" target="_blank" rel="noopener noreferrer">{t.c4}</a></li>
-              <li><a href="?admin=1">{t.admin}</a></li>
+              <li><a href={ADMIN_URL}>{t.admin}</a></li>
             </ul>
           </div>
         </div>
