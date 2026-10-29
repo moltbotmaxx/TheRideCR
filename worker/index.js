@@ -83,7 +83,9 @@ function validSubscription(value) {
 }
 async function sendPush(env, subscription, data) {
   const payload = await buildPushPayload({ data: JSON.stringify(data), options: { ttl: 3600 } }, subscription, { subject: env.VAPID_SUBJECT, publicKey: env.VAPID_PUBLIC_KEY, privateKey: env.VAPID_PRIVATE_KEY });
-  return fetch(subscription.endpoint, { ...payload, redirect: 'error', signal: AbortSignal.timeout(8000) });
+  // workerd supports manual/follow, but rejects redirect:error before sending.
+  // Manual mode keeps provider redirects blocked without leaving the allowlisted endpoint.
+  return fetch(subscription.endpoint, { ...payload, redirect: 'manual', signal: AbortSignal.timeout(8000) });
 }
 async function deliver(env, data) {
   const { results } = await env.DB.prepare('SELECT endpoint, payload FROM push_subscriptions WHERE user_id = ?').bind(env.ADMIN_EMAIL.toLowerCase()).all();
@@ -94,7 +96,11 @@ async function deliver(env, data) {
       if (response.ok) sent++;
       else if (response.status === 404 || response.status === 410) await env.DB.prepare('DELETE FROM push_subscriptions WHERE endpoint = ?').bind(row.endpoint).run();
       else { failed++; console.warn('Push provider status', response.status); }
-    } catch { failed++; console.warn('Push delivery failed; retry queued'); }
+    } catch (error) {
+      failed++;
+      const message = String(error?.message || 'Unknown error').replace(/https?:\/\/\S+/gi, '[endpoint]').replace(/[A-Za-z0-9_-]{32,}/g, '[redacted]').slice(0, 180);
+      console.warn('Push delivery failed; retry queued', { name: error?.name || 'Error', message });
+    }
   }));
   return { sent, failed, devices: results.length };
 }
